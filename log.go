@@ -65,7 +65,6 @@ func (l *LoggingQueryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, 
 }
 
 func NewPoolWithTrace(ctx context.Context, log fancylog.FancyLogger, databaseURL string) (*pgxpool.Pool, error) {
-	pgx.ParseConfigWithOptions()
 	connConfig, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
 		return nil, err
