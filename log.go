@@ -95,10 +95,20 @@ func NewTracePoolWithConfig(ctx context.Context, log fancylog.FancyLogger, datab
 			return nil, fmt.Errorf("tracer already set, cannot set fancylog tracer")
 		}
 		options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
-
 	}
+	log.InfoMap(map[string]any{
+		"message":               "fancy tracer pool options",
+		"MaxConns":              options.MaxConns,
+		"MinConns":              options.MinConns,
+		"MaxConnLifetime":       options.MaxConnLifetime,
+		"MaxConnIdleTime":       options.MaxConnIdleTime,
+		"HealthCheckPeriod":     options.HealthCheckPeriod,
+		"MinIdleConns":          options.MinIdleConns,
+		"MaxConnLifetimeJitter": options.MaxConnLifetimeJitter,
+	})
 
 	pool, err := pgxpool.NewWithConfig(ctx, options)
+
 	if err != nil {
 		return nil, err
 	}
