@@ -3,11 +3,12 @@ package pg_fancylog
 import (
 	"context"
 	"fmt"
+	"regexp"
+	"time"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/n-ask/fancylog"
-	"regexp"
-	"time"
 )
 
 var (
@@ -64,7 +65,7 @@ func (l *LoggingQueryTracer) TraceQueryEnd(ctx context.Context, conn *pgx.Conn, 
 }
 
 func NewPoolWithTrace(ctx context.Context, log fancylog.FancyLogger, databaseURL string) (*pgxpool.Pool, error) {
-
+	pgx.ParseConfigWithOptions()
 	connConfig, err := pgxpool.ParseConfig(databaseURL)
 	if err != nil {
 		return nil, err
@@ -72,6 +73,32 @@ func NewPoolWithTrace(ctx context.Context, log fancylog.FancyLogger, databaseURL
 	connConfig.ConnConfig.Tracer = NewLoggingQueryTracer(log)
 
 	pool, err := pgxpool.NewWithConfig(ctx, connConfig)
+	if err != nil {
+		return nil, err
+	}
+	if err := pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+	return pool, nil
+}
+
+func NewTracePoolWithConfig(ctx context.Context, log fancylog.FancyLogger, databaseURL string, options *pgxpool.Config) (*pgxpool.Pool, error) {
+	var err error
+	if options == nil {
+		options, err = pgxpool.ParseConfig(databaseURL)
+		if err != nil {
+			return nil, err
+		}
+		options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
+	} else {
+		if options.ConnConfig.Tracer != nil {
+			return nil, fmt.Errorf("tracer already set, cannot set fancylog tracer")
+		}
+		options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
+
+	}
+
+	pool, err := pgxpool.NewWithConfig(ctx, options)
 	if err != nil {
 		return nil, err
 	}
