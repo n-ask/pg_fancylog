@@ -81,20 +81,12 @@ func NewPoolWithTrace(ctx context.Context, log fancylog.FancyLogger, databaseURL
 	return pool, nil
 }
 
-func NewTracePoolWithConfig(ctx context.Context, log fancylog.FancyLogger, databaseURL string, options *pgxpool.Config) (*pgxpool.Pool, error) {
+func NewTracePoolWithConfig(ctx context.Context, log fancylog.FancyLogger, options *pgxpool.Config) (*pgxpool.Pool, error) {
 	var err error
-	if options == nil {
-		options, err = pgxpool.ParseConfig(databaseURL)
-		if err != nil {
-			return nil, err
-		}
-		options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
-	} else {
-		if options.ConnConfig.Tracer != nil {
-			return nil, fmt.Errorf("tracer already set, cannot set fancylog tracer")
-		}
-		options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
+	if options.ConnConfig.Tracer != nil {
+		return nil, fmt.Errorf("tracer already set, cannot set fancylog tracer")
 	}
+	options.ConnConfig.Tracer = NewLoggingQueryTracer(log)
 	log.InfoMap(map[string]any{
 		"message":               "fancy tracer pool options",
 		"MaxConns":              options.MaxConns,
