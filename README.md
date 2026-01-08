@@ -85,11 +85,8 @@ func main() {
 
 When a query is executed, `pg_fancylog` will output a structured log map similar to:
 
-```shell
-DEBUG | duration=1.23ms sql="SELECT * FROM users WHERE id = $1" args=[123] rowsReturned=1
-```
+<span><span style="color: #6136D6">&lt;logger-name&gt;</span> <span style="color: #B817B7">[DEBUG]</span> <span style="color: #0913A3">2026-01-08T13:58:19Z</span> <span style="color: #721072">args</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">[admin]</span> <span style="color: #721072">duration</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">500.615µs</span> <span style="color: #721072">rowsReturned</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">1</span> <span style="color: #721072">sql</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">select count(*) > 0 as num_users from users where role = $1; </span></span>
+
 Errors will be logged at the `ERROR` level:
 
-```text
-ERROR | duration=500µs sql="SELECT * FROM non_existent_table" error="ERROR: relation \"non_existent_table\" does not exist (SQLSTATE 42P01)"
-```
+<span><span style="color: #6136D6">&lt;logger-name&gt;</span> <span style="color: red">[ERROR]</span> <span style="color: #0913A3">2026-01-08T13:58:19Z</span> <span style="color: #721072">error</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">relation test_users does not exist</span> <span style="color: #721072">args</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">[admin]</span> <span style="color: #721072">duration</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">500.615µs</span> <span style="color: #721072">rowsReturned</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">1</span> <span style="color: #721072">sql</span><span style="color: #BBB921">=</span><span style="color: #20AAA9">select count(*) > 0 as num_users from test_users where role = $1; </span></span>
