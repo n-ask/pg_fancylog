@@ -86,7 +86,6 @@ func main() {
 When a query is executed, `pg_fancylog` will output a structured log map similar to:
 
 ```shell
-^[[1m^[[38;5;99m<brewdb-postgres> ^[[0m^[[0;35m[DEBUG]^[[0m ^[[0;34m2026-01-08T13:58:19Z ^[[0m^[[0;35margs^[[0;33m=^[[0;36m[bdb_b19c7916cdc211ef87167bebe93b85e6] ^[[0;35mduration^[[0;33m=^[[0;36m500.615µs ^[[0;35mrowsReturned^[[0;33m=^[[0;36m1 ^[[0;35msql^[[0;33m=^[[0;36mselect count(*) > 0 as locked from brewdb_maintenance_locks where brewdb_uuid = $1;     ^[[0m
 DEBUG | duration=1.23ms sql="SELECT * FROM users WHERE id = $1" args=[123] rowsReturned=1
 ```
 Errors will be logged at the `ERROR` level:
